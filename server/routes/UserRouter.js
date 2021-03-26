@@ -1,16 +1,16 @@
 const { Router } = require('express')
-const ExampleController = require('../controller/UserController')
+const UserController = require('../controller/UserController')
 
 const router = Router()
 
-router.get("/users", UserController.getAllExamples);
+router.get("/users", UserController.getUsers);
 
-router.get("/users/:userId", UserController.getAllExamples);
+router.get("/users/:userId", UserController.getUserId);
 
-router.post("/users", UserController.getAllExamples);
+router.post("/users", UserController.createUsers);
 
-router.put("/users/:userId", UserController.getAllExamples);
+router.put("/users/:userId", UserController.updateUsers);
 
-router.delete("/users/:userId", UserController.getAllExamples);
+router.delete("/users/:userId", UserController.deleteUsers);
 
 module.exports = router

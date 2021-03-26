@@ -1,9 +1,16 @@
-const express = require('express')
-const routes = require('./server/routes/index')
-const app = express()
-const port = 3000
+const express = require('express');
+const userRoutes = require('./server/routes/UserRouter');
+const productsRoutes = require('./server/routes/ProductRouter');
+const ordersRoutes = require('./server/routes/OrderRouter');
+const app = express();
+const port = 3000;
 
-app.use('/', routes);
+app.use(express.json())
+app.use(express.urlencoded({ extended: true}))
+
+app.use('/', userRoutes);
+app.use('/', productsRoutes);
+app.use('/', ordersRoutes);
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
