@@ -1,7 +1,7 @@
 const database = require('../db/models')
 
 const UserServices = {
-    async listUser() {
+    async listUsers() {
         return await database.User.findAll();
     },
 

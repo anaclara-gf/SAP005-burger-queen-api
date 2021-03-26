@@ -74,7 +74,7 @@ const OrderController = {
             })
             res.status(201).json(req.body);
         } catch(error) {
-            res.status(400).json(error);
+            res.status(400).json(error.message);
         }
     },
 
@@ -107,7 +107,7 @@ const OrderController = {
             await OrderServices.updateOrder(orderId, orderToUpdate);
             res.status(200).json(req.body);
         } catch (error) {
-            res.status(400).json(error)
+            res.status(400).json(error.message)
         }
     },
 
@@ -118,7 +118,7 @@ const OrderController = {
             const deletedOrder = await OrderServices.deleteOrder(orderId);
             res.status(200).json('Order was deleted successfully');
         } catch (error) {
-             res.status(400).json(error)
+             res.status(400).json(error.message)
         }
     }
 };

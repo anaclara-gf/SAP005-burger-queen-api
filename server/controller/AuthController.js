@@ -23,13 +23,13 @@ const AuthController = {
         }
     },
 
-    auth(req,res,next) {
+    async auth(req,res,next) {
         const token = req.headers.authorization;
         if(!token) {
             res.status(401).json({ error: 'authentication required, please provide your token!' });
         }
 
-        jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        jwt.verify(token, process.env.JWT_SECRET, (err) => {
             if (err){
                 res.status(500).json({ error: 'failed to authenticate token' });
             }
