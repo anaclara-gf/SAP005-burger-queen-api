@@ -1,10 +1,11 @@
-const UserServices = require('../services/UserServices')
+const bcrypt = require ('bcrypt');
+const UserServices = require('../services/UserServices');
 
 const UserController = {
   async getUsers(req, res) {
     try {
       const listUsers = await UserServices.listUser();
-      res.status(201).json(listUsers);
+      res.status(200).json(listUsers);
     } catch (error) {
       res.status(400).json(error)
     }
@@ -14,14 +15,20 @@ const UserController = {
     const userId = parseInt(req.params.userId);
     try {
       const listUserId = await UserServices.listUserId(userId);
-      res.status(201).json(listUserId);
+      res.status(200).json(listUserId);
     } catch (error) {
       res.status(400).json(error)
     }
   },
 
   async createUsers(req, res) {
-    const user = req.body;
+    const user = {
+      name: req.body.name,
+      role: req.body.role,
+      restaurant: req.body.restaurant,
+      email: req.body.email,
+      password: bcrypt.hashSync(req.body.name, 10),
+    };
     try { 
       const createdUser = await UserServices.createUser(user);
       res.status(201).json(createdUser);

@@ -11,6 +11,12 @@ const UserServices = {
         );
     },
 
+    async listUserEmail(userEmail) {
+        return await database.User.findOne(
+            {where: {email: userEmail}}
+        )
+    },
+
     async createUser(userData) {
         return await database.User.create(userData);
     },
