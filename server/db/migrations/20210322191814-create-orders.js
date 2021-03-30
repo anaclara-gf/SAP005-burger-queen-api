@@ -21,6 +21,10 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false
       },
+      details: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
       status: {
         type: Sequelize.STRING,
         defaultValue: "pending"

@@ -8,7 +8,7 @@ router.get("/users", AuthController.auth, UserController.getUsers);
 
 router.get("/users/:userId", AuthController.auth, UserController.getUserId);
 
-router.post("/users", AuthController.auth, UserController.createUsers);
+router.post("/users", UserController.createUsers);
 
 router.put("/users/:userId", AuthController.auth, UserController.updateUsers);
 

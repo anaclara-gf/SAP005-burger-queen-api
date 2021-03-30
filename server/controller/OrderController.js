@@ -1,4 +1,7 @@
 const OrderServices = require('../services/OrderServices');
+const UserServices = require('../services/UserServices');
+const ProductServices = require('../services/ProductServices');
+const { ErrorHandler } = require('../utils/error');
 
 const OrderController = {
     async getOrders(req,res) {
@@ -11,6 +14,7 @@ const OrderController = {
                     "employee_id": order.user_id,
                     "client_name": order.client_name,
                     "table": order.table,
+                    "details": order.details,
                     "status": order.status,
                     "createdAt": order.createdAt,
                     "updatedAt": order.updatedAt,
@@ -31,16 +35,20 @@ const OrderController = {
         }
     },
 
-    async getOrderId(req,res) {
+    async getOrderId(req,res,next) {
         try {
             const orderId = req.params.orderId;
             const listOrderId = await OrderServices.listOrderId(orderId);
+            if(!listOrderId){
+                throw new ErrorHandler(404, "id not found!");
+            }
             const listOrderIdOrganized = {
                 "order_id": listOrderId.id,
                 "employee_name": listOrderId.user.name,
                 "employee_id": listOrderId.user_id,
                 "client_name": listOrderId.client_name,
                 "table": listOrderId.table,
+                "details": listOrderId.details,
                 "status": listOrderId.status,
                 "createdAt": listOrderId.createdAt,
                 "updatedAt": listOrderId.updatedAt,
@@ -56,14 +64,27 @@ const OrderController = {
             }
             res.status(200).json(listOrderIdOrganized);
         } catch(error) {
-            res.status(400).json(error.message);
+            next(error);
         }
     },
 
-    async createOrder(req,res) {
+    async createOrder(req,res,next) {
         try {
-            const createdOrder = await OrderServices.createOrder(req.body);
+            if(Object.keys(req.body).length === 0) {
+                throw new ErrorHandler(400, "body is empty!");
+            }
+            const user = await UserServices.listUserId(req.body.user_id);
+            if(!user) {
+                throw new ErrorHandler(404, "user_id not found!");
+            };
             const orderProducts = req.body.products;
+            await Promise.all(orderProducts.map(async (product) => {
+                const productsExists = await ProductServices.listProductId(product.product_id);
+                if(Array.isArray(productsExists) && !productsExists.length) {
+                    throw new ErrorHandler(404, "product_id not found!");
+                }
+            }));
+            const createdOrder = await OrderServices.createOrder(req.body);
             orderProducts.forEach(product => {
                 const products = {
                     'order_id': createdOrder.id,
@@ -74,51 +95,60 @@ const OrderController = {
             })
             res.status(201).json(req.body);
         } catch(error) {
-            res.status(400).json(error.message);
+            next(error);
         }
     },
 
-    async updateOrder(req,res) {
-        const orderId = parseInt(req.params.orderId);
-        const orderProducts = req.body.products;
-        const oldOrder = await OrderServices.listOrderId(orderId);
-        orderToUpdate = {
-          "id": orderId,
-          "client_name": req.body.client_name ? req.body.client_name : oldOrder.client_name,
-          "table": req.body.table ? req.body.table : oldOrder.table,
-          "user_id": req.body.user_id ? req.body.user_id : oldOrder.user_id,
-          "status": req.body.status ? req.body.status : oldOrder.status,
-        }
-
-        if(orderProducts){
-            orderProducts.forEach(async (product) => {
-                const productId = product.product_id;
-                const products = {
-                    'order_id': orderId,
-                    'product_id': productId,
-                    'qtd': product.qtd
-                }
-                const oldOrderProduct = await OrderServices.listOrderProducts(orderId, productId);
-                productId === oldOrderProduct.product_id ? OrderServices.updateOrderProducts(productId, orderId, products) : null;
-            })
-        }
-
+    async updateOrder(req,res,next) {  
         try {
+            if(Object.keys(req.body).length === 0) {
+                throw new ErrorHandler(400, "body is empty!");
+            }
+            const orderId = parseInt(req.params.orderId);
+            const orderProducts = req.body.products;
+            const oldOrder = await OrderServices.listOrderId(orderId);
+            if(!oldOrder){
+                throw new ErrorHandler(404, "id not found!");
+            }
+            orderToUpdate = {
+              "id": orderId,
+              "client_name": req.body.client_name ? req.body.client_name : oldOrder.client_name,
+              "table": req.body.table ? req.body.table : oldOrder.table,
+              "user_id": req.body.user_id ? req.body.user_id : oldOrder.user_id,
+              "status": req.body.status ? req.body.status : oldOrder.status,
+            }
+    
+            if(orderProducts){
+                orderProducts.forEach(async (product) => {
+                    const productId = product.product_id;
+                    const products = {
+                        'order_id': orderId,
+                        'product_id': productId,
+                        'qtd': product.qtd
+                    }
+                    const oldOrderProduct = await OrderServices.listOrderProducts(orderId, productId);
+                    productId === oldOrderProduct.product_id ? OrderServices.updateOrderProducts(productId, orderId, products) : null;
+                })
+            }
             await OrderServices.updateOrder(orderId, orderToUpdate);
             res.status(200).json(req.body);
         } catch (error) {
-            res.status(400).json(error.message)
+            next(error);
         }
     },
 
-    async deleteOrder(req,res){
-        const orderId = parseInt(req.params.orderId);
+    async deleteOrder(req,res,next) {
         try {
-            const deleteOrderProducts = await OrderServices.deleteOrderProducts(orderId);
-            const deletedOrder = await OrderServices.deleteOrder(orderId);
+            const orderId = parseInt(req.params.orderId);
+            const orderExists = await OrderServices.listOrderId(orderId);
+            if(!orderExists){
+                throw new ErrorHandler(404, "id not found!");
+            }
+            await OrderServices.deleteOrderProducts(orderId);
+            await OrderServices.deleteOrder(orderId);
             res.status(200).json('Order was deleted successfully');
         } catch (error) {
-             res.status(400).json(error.message)
+             next(error);
         }
     }
 };

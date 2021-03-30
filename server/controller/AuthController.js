@@ -1,25 +1,23 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const UserServices = require('../services/UserServices');
+const { ErrorHandler } = require('../utils/error');
 
 const AuthController = {
     async login(req,res){
-        userEmail = req.body.email;
         try {
+            userEmail = req.body.email;
             const listUserEmail = await UserServices.listUserEmail(userEmail);
-            console.log(listUserEmail.password)
-            console.log(req.body.password)
-            if(bcrypt.compareSync(req.body.password, listUserEmail.password)) {
-                return res.status(401).json({ error: "invalid password!" });
+            if(!bcrypt.compareSync(req.body.password, listUserEmail.password)) {
+                throw new ErrorHandler(401, "invalid password!");
             }
 
             const jwtPayload = { id: listUserEmail.id };
             const token = jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: 604800 });
 
             return res.status(200).json({ token });
-
         } catch(err) {
-            res.status(401).json({ error: "email not found" });
+            next(err);
         }
     },
 
