@@ -4,7 +4,7 @@ const UserServices = require('../services/UserServices');
 const { ErrorHandler } = require('../utils/error');
 
 const AuthController = {
-    async login(req,res){
+    async login(req,res) {
         try {
             userEmail = req.body.email;
             const listUserEmail = await UserServices.listUserEmail(userEmail);

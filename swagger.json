@@ -1,0 +1,1015 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "API para a aplicação web desenvolvida para o restaurante Acka Burger",
+    "version": "1.0.0",
+    "title": "Acka Burger API",
+    "contact": {
+      "email": "anaclaragf@outlook.com",
+      "url": "https://github.com/anaclara-gf"
+    }
+  },
+  "host": "ackaburger-api.herokuapp.com/",
+  "tags": [
+    {
+      "name": "auth",
+      "description": "Cria um token"
+    },
+    {
+      "name": "users",
+      "description": "Operações com usuários"
+    },
+    {
+      "name": "products",
+      "description": "Operações com produtos"
+    },
+    {
+      "name": "orders",
+      "description": "Operações com pedidos"
+    }
+  ],
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/auth": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Gera um token a partir de um e-mail e senha de um usuário registrado",
+        "description": "",
+        "operationId": "auth",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "type": "json",
+            "description": "E-mail e senha do usuário cadastrado",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Auth"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Token criado",
+            "schema": {
+              "$ref": "#/definitions/AuthResponse"
+            }
+          },
+          "401": {
+            "description": "Invalid password",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Lista todos os usuários",
+        "description": "Lista todos os colaboradores do restaurante que já foram registrados no sistema",
+        "operationId": "listUsers",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "type": "string",
+            "description": "Token fornecido na autenticação do usuário",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de usuários",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/UsersResponse"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+      "tags": [
+        "users"
+      ],
+      "summary": "Cria um usuário",
+      "description": "Cria um usuário a partir dos parâmetros fornecidos no body",
+      "operationId": "createUsers",
+      "produces": [
+        "application/json"
+      ],
+      "parameters": [
+        {
+          "in": "header",
+          "name": "Authorization",
+          "type": "string",
+          "description": "Token fornecido na autenticação do usuário",
+          "required": true
+        },
+        {
+          "in": "body",
+          "name": "body",
+          "type": "json",
+          "description": "Dados para o registro de um novo usuário",
+          "required": true,
+          "schema": {
+            "$ref": "#/definitions/UsersBody"
+          }
+        }
+      ],
+      "responses": {
+        "201": {
+          "description": "Usuário criado",
+          "schema": {
+            "$ref": "#/definitions/UsersResponse"
+          }
+        },
+        "400": {
+          "description": "Bad Request",
+          "schema": {
+            "$ref": "#/definitions/Error"
+          }
+        }
+      }
+      }
+    },
+    "/users/{userId}": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Lista um usuário",
+        "description": "Lista um usuário específico a partir do ID",
+        "operationId": "listUsersId",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "type": "number",
+            "description": "Número do ID do usuário a ser listado",
+            "required": true
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "type": "string",
+            "description": "Token fornecido na autenticação do usuário",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário",
+            "schema": {
+              "$ref": "#/definitions/UsersResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Atualiza um usuário",
+        "description": "Atualiza um usuário específico a partir do ID",
+        "operationId": "updateUsersId",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "type": "number",
+            "description": "Número do ID do usuário a ser atualizado",
+            "required": true
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "type": "string",
+            "description": "Token fornecido na autenticação do usuário",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "type": "json",
+            "description": "Dados para atualizar o registro de um usuário",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UsersBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário atualizado",
+            "schema": {
+              "$ref": "#/definitions/UsersResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Deleta um usuário",
+        "description": "Deleta um usuário específico a partir do ID",
+        "operationId": "deleteUsersId",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "type": "number",
+            "description": "Número do ID do usuário a ser deletado",
+            "required": true
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "type": "string",
+            "description": "Token fornecido na autenticação do usuário",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário deletado"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/products": {
+      "get": {
+        "tags": [
+          "products"
+        ],
+        "summary": "Lista todos os produtos",
+        "description": "Lista todos os produtos que já foram registrados no sistema",
+        "operationId": "listUsers",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "type": "string",
+            "description": "Token fornecido na autenticação do usuário",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de produtos",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ProductsResponse"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "products"
+        ],
+        "summary": "Cria um produto",
+        "description": "Cria um produto a partir dos parâmetros fornecidos no body",
+        "operationId": "createProducts",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "type": "string",
+            "description": "Token fornecido na autenticação do usuário",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "type": "json",
+            "description": "Dados para o registro de um novo produto",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ProductsBody"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Produto criado",
+            "schema": {
+              "$ref": "#/definitions/ProductsResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/products/{productId}": {
+      "get": {
+        "tags": [
+          "products"
+        ],
+        "summary": "Lista um produto",
+        "description": "Lista um produto específico a partir do ID",
+        "operationId": "listProductsId",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "productId",
+            "type": "number",
+            "description": "Número do ID do produto a ser listado",
+            "required": true
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "type": "string",
+            "description": "Token fornecido na autenticação do usuário",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Produto",
+            "schema": {
+              "$ref": "#/definitions/ProductsResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "products"
+        ],
+        "summary": "Atualiza um produto",
+        "description": "Atualiza um produto específico a partir do ID",
+        "operationId": "updateProductsId",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "productId",
+            "type": "number",
+            "description": "Número do ID do produto a ser atualizado",
+            "required": true
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "type": "string",
+            "description": "Token fornecido na autenticação do usuário",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "type": "json",
+            "description": "Dados para atualizar um produto",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ProductsBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Produto atualizado",
+            "schema": {
+              "$ref": "#/definitions/ProductsResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "products"
+        ],
+        "summary": "Deleta um produto",
+        "description": "Deleta um produto específico a partir do ID",
+        "operationId": "deleteProductsId",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "productId",
+            "type": "number",
+            "description": "Número do ID do produto a ser deletado",
+            "required": true
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "type": "string",
+            "description": "Token fornecido na autenticação do usuário",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Produto deletado"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/orders": {
+      "get": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Lista todos os pedidos",
+        "description": "Lista todos os pedidos que já foram registrados no sistema",
+        "operationId": "listOrders",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "type": "string",
+            "description": "Token fornecido na autenticação do usuário",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de pedidos",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/OrdersResponse"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Cria um pedido",
+        "description": "Cria um pedido a partir dos parâmetros fornecidos no body",
+        "operationId": "createOrders",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "type": "string",
+            "description": "Token fornecido na autenticação do usuário",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "type": "json",
+            "description": "Dados para o registro de um novo pedido",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OrdersBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pedido criado",
+            "schema": {
+              "$ref": "#/definitions/OrdersResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/orders/{orderId}": {
+      "get": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Lista um pedido",
+        "description": "Lista um pedido específico a partir do ID",
+        "operationId": "listOrdersId",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "type": "number",
+            "description": "Número do ID do pedido a ser listado",
+            "required": true
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "type": "string",
+            "description": "Token fornecido na autenticação do usuário",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pedido",
+            "schema": {
+              "$ref": "#/definitions/OrdersResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Atualiza um pedido",
+        "description": "Atualiza um pedido específico a partir do ID",
+        "operationId": "updateOrdersId",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "type": "number",
+            "description": "Número do ID do pedido a ser atualizado",
+            "required": true
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "type": "string",
+            "description": "Token fornecido na autenticação do usuário",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "type": "json",
+            "description": "Dados para a atualização de um pedido",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OrdersBodyPut"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pedido atualizado",
+            "schema": {
+              "$ref": "#/definitions/OrdersResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Deleta um pedido",
+        "description": "Deleta um pedido específico a partir do ID",
+        "operationId": "deleteOrdersId",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "type": "number",
+            "description": "Número do ID do pedido a ser deletado",
+            "required": true
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "type": "string",
+            "description": "Token fornecido na autenticação do usuário",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pedido deletado"
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Auth": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "Auth"
+      }
+    },
+    "AuthResponse": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "AuthResponse"
+      }
+    },
+    "UsersBody": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "restaurant": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "UsersResponse"
+      }
+    },
+    "UsersResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "restaurant": {
+          "type": "string"
+        },
+        "processedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "xml": {
+        "name": "UsersResponse"
+      }
+    },
+    "ProductsBody": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "price": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "type": {
+          "type": "string"
+        },
+        "sub_type": {
+          "type": "string"
+        },
+        "flavor": {
+          "type": "string"
+        },
+        "complement": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "ProductsBody"
+      }
+    },
+    "ProductsResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "price": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "type": {
+          "type": "string"
+        },
+        "sub_type": {
+          "type": "string"
+        },
+        "flavor": {
+          "type": "string"
+        },
+        "complement": {
+          "type": "string"
+        },
+        "processedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "xml": {
+        "name": "ProductsResponse"
+      }
+    },
+    "ProductsOrders": {
+      "type": "object",
+      "properties": {
+        "product_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "qtd": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "xml": {
+        "name": "ProductsOrders"
+      }
+    },
+    "OrdersResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "employee_name": {
+          "type": "string"
+        },
+        "employee_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "client_name": {
+          "type": "string"
+        },
+        "table": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "details": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "products": {
+          "type": "array",
+          "xml": {
+            "name": "tag",
+            "wrapped": true
+          },
+          "items": {
+            "$ref": "#/definitions/ProductsOrders"
+          }
+        },
+        "processedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "xml": {
+        "name": "OrdersResponse"
+      }
+    },
+    "OrdersBody": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "client_name": {
+          "type": "string"
+        },
+        "table": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "details": {
+          "type": "string"
+        },
+        "products": {
+          "type": "array",
+          "xml": {
+            "name": "tag",
+            "wrapped": true
+          },
+          "items": {
+            "$ref": "#/definitions/ProductsOrders"
+          }
+        }
+      },
+      "xml": {
+        "name": "OrdersBody"
+      }
+    },
+    "OrdersBodyPut": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "client_name": {
+          "type": "string"
+        },
+        "table": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "details": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "products": {
+          "type": "array",
+          "xml": {
+            "name": "tag",
+            "wrapped": true
+          },
+          "items": {
+            "$ref": "#/definitions/ProductsOrders"
+          }
+        }
+      },
+      "xml": {
+        "name": "OrdersBody"
+      }
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
