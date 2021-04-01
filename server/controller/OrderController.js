@@ -4,7 +4,7 @@ const ProductServices = require('../services/ProductServices');
 const { ErrorHandler } = require('../utils/error');
 
 const OrderController = {
-    async getOrders(req,res) {
+    async getOrders(req,res,next) {
         try {
             const listOrders = await OrderServices.listOrders();
             const listOrdersOrganized = listOrders.map(order => {
@@ -31,7 +31,7 @@ const OrderController = {
             })
             res.status(200).json(listOrdersOrganized);
         } catch(error) {
-            res.status(400).json(error.message);
+            next(error);
         }
     },
 
@@ -40,7 +40,7 @@ const OrderController = {
             const orderId = req.params.orderId;
             const listOrderId = await OrderServices.listOrderId(orderId);
             if(!listOrderId){
-                throw new ErrorHandler(404, "id not found!");
+                throw new ErrorHandler(404, "order not found!");
             }
             const listOrderIdOrganized = {
                 "order_id": listOrderId.id,
@@ -74,11 +74,20 @@ const OrderController = {
                 throw new ErrorHandler(400, "body is empty!");
             }
             const user = await UserServices.listUserId(req.body.user_id);
+            if(!req.body.user_id || !req.body.client_name || !req.body.table || !req.body.products) {
+                throw new ErrorHandler(404, "missing information");
+            }
+            if(!Array.isArray(req.body.products)) {
+                throw new ErrorHandler(400, "products should be an array");
+            }
             if(!user) {
                 throw new ErrorHandler(404, "user_id not found!");
             };
             const orderProducts = req.body.products;
             await Promise.all(orderProducts.map(async (product) => {
+                if(!product.product_id || !product.qtd) {
+                    throw new ErrorHandler(404, "missing information (all objects in array 'products' should contain 'product_id' and 'qtd' keys)");
+                }
                 const productsExists = await ProductServices.listProductId(product.product_id);
                 if(Array.isArray(productsExists) && !productsExists.length) {
                     throw new ErrorHandler(404, "product_id not found!");
@@ -101,14 +110,23 @@ const OrderController = {
 
     async updateOrder(req,res,next) {  
         try {
-            if(Object.keys(req.body).length === 0) {
-                throw new ErrorHandler(400, "body is empty!");
-            }
             const orderId = parseInt(req.params.orderId);
             const orderProducts = req.body.products;
             const oldOrder = await OrderServices.listOrderId(orderId);
             if(!oldOrder){
-                throw new ErrorHandler(404, "id not found!");
+                throw new ErrorHandler(404, "order not found!");
+            }
+            if(Object.keys(req.body).length === 0) {
+                throw new ErrorHandler(400, "body is empty!");
+            }
+            if(req.body.id) {
+                throw new ErrorHandler(401, "id cannot be updated!");
+            }
+            if(!req.body.user_id && !req.body.client_name && !req.body.table && !req.body.products && !req.body.status && !req.body.details) {
+                throw new ErrorHandler(401, "key doesn't exist!");
+            }
+            if(!Array.isArray(req.body.products)) {
+                throw new ErrorHandler(400, "products should be an array");
             }
             orderToUpdate = {
               "id": orderId,
@@ -119,7 +137,14 @@ const OrderController = {
             }
     
             if(orderProducts){
-                orderProducts.forEach(async (product) => {
+                await Promise.all(orderProducts.map(async (product) => {
+                    if(!product.product_id || !product.qtd) {
+                        throw new ErrorHandler(404, "missing information (all objects in array 'products' should contain 'product_id' and 'qtd' keys)");
+                    }
+                    const productsExists = await ProductServices.listProductId(product.product_id);
+                    if(Array.isArray(productsExists) && !productsExists.length) {
+                        throw new ErrorHandler(404, "product_id not found!");
+                    }
                     const productId = product.product_id;
                     const products = {
                         'order_id': orderId,
@@ -128,10 +153,10 @@ const OrderController = {
                     }
                     const oldOrderProduct = await OrderServices.listOrderProducts(orderId, productId);
                     productId === oldOrderProduct.product_id ? OrderServices.updateOrderProducts(productId, orderId, products) : null;
-                })
+                }))
             }
             await OrderServices.updateOrder(orderId, orderToUpdate);
-            res.status(200).json(req.body);
+            res.status(200).json({"message": "Order was updated succesfully", "changes": req.body});
         } catch (error) {
             next(error);
         }
@@ -142,7 +167,7 @@ const OrderController = {
             const orderId = parseInt(req.params.orderId);
             const orderExists = await OrderServices.listOrderId(orderId);
             if(!orderExists){
-                throw new ErrorHandler(404, "id not found!");
+                throw new ErrorHandler(404, "order not found!");
             }
             await OrderServices.deleteOrderProducts(orderId);
             await OrderServices.deleteOrder(orderId);

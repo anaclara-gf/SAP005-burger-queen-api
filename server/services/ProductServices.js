@@ -11,6 +11,12 @@ const ProductServices = {
         );
     },
 
+    async listProductName(productName) {
+        return await database.Product.findAll(
+            {where: {name: productName}}
+        );
+    },
+
     async createProduct(productData) {
         return await database.Product.create(productData);
     },

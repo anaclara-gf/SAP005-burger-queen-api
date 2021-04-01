@@ -4,10 +4,19 @@ const UserServices = require('../services/UserServices');
 const { ErrorHandler } = require('../utils/error');
 
 const AuthController = {
-    async login(req,res) {
+    async login(req,res,next) {
         try {
             userEmail = req.body.email;
+            if(!userEmail) {
+                throw new ErrorHandler(400, "email is required");
+            }
+            if(!req.body.password) {
+                throw new ErrorHandler(400, "password is required");
+            }
             const listUserEmail = await UserServices.listUserEmail(userEmail);
+            if(!listUserEmail) {
+                throw new ErrorHandler(404, "email not found");
+            }
             if(!bcrypt.compareSync(req.body.password, listUserEmail.password)) {
                 throw new ErrorHandler(401, "invalid password!");
             }
@@ -22,18 +31,23 @@ const AuthController = {
     },
 
     async auth(req,res,next) {
-        const token = req.headers.authorization;
-        if(!token) {
-            res.status(401).json({ error: 'authentication required, please provide your token!' });
+        try {
+            const token = req.headers.authorization;
+            if(!token) {
+                throw new ErrorHandler(401, 'authentication required, please provide your token!');
+            }
+    
+            jwt.verify(token, process.env.JWT_SECRET, (err) => {
+                if (err){
+                    throw new ErrorHandler(401, 'failed to authenticate token');
+                }
+            });
+
+            next();
+        } catch(error) {
+            next(error);
         }
 
-        jwt.verify(token, process.env.JWT_SECRET, (err) => {
-            if (err){
-                res.status(500).json({ error: 'failed to authenticate token' });
-            }
-        });
-
-        next();
     }
 };
 
