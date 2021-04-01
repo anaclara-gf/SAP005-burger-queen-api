@@ -70,5 +70,5 @@ Esse projeto faz parte do currículo do <a href="https://www.laboratoria.la/br">
 </p>
 
 <p align="center">
-Desenvolvido por: <a href="https://github.com/anaclara-gf">Ana Clara Garcia Farah</a>
+:star: Desenvolvido por: <a href="https://github.com/anaclara-gf">Ana Clara Garcia Farah</a> :star:
 <p/>
