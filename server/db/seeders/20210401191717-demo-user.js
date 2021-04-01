@@ -1,4 +1,5 @@
 'use strict';
+const bcrypt = require ('bcrypt');
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -6,7 +7,7 @@ module.exports = {
       {
         name: "Amanda",
         email: "teste1@teste",
-        password: "123456",
+        password: bcrypt.hashSync("123456", 10),
         role: "salao",
         restaurant: "AckaBurger",
         createdAt:new Date(),
@@ -15,7 +16,7 @@ module.exports = {
       {
         name: "Maria",
         email: "teste2@teste",
-        password: "123456",
+        password: bcrypt.hashSync("123456", 10),
         role: "salao",
         restaurant: "AckaBurger",
         createdAt:new Date(),
@@ -24,7 +25,7 @@ module.exports = {
       {
         name: "Marcos",
         email: "teste3@teste",
-        password: "123456",
+        password: bcrypt.hashSync("123456", 10),
         role: "salao",
         restaurant: "AckaBurger",
         createdAt:new Date(),
@@ -33,7 +34,7 @@ module.exports = {
       {
         name: "Bruno",
         email: "teste4@teste",
-        password: "123456",
+        password: bcrypt.hashSync("123456", 10),
         role: "cozinha",
         restaurant: "AckaBurger",
         createdAt:new Date(),
@@ -42,7 +43,7 @@ module.exports = {
       {
         name: "Mariana",
         email: "teste5@teste",
-        password: "123456",
+        password: bcrypt.hashSync("123456", 10),
         role: "cozinha",
         restaurant: "AckaBurger",
         createdAt:new Date(),
@@ -51,7 +52,7 @@ module.exports = {
       {
         name: "Marcia",
         email: "teste6@teste",
-        password: "123456",
+        password: bcrypt.hashSync("123456", 10),
         role: "cozinha",
         restaurant: "AckaBurger",
         createdAt:new Date(),
@@ -60,7 +61,7 @@ module.exports = {
       {
         name: "Marcelo",
         email: "teste7@teste",
-        password: "123456",
+        password: bcrypt.hashSync("123456", 10),
         role: "admin",
         restaurant: "AckaBurger",
         createdAt:new Date(),
@@ -69,7 +70,7 @@ module.exports = {
       {
         name: "Ana Clara",
         email: "teste8@teste",
-        password: "123456",
+        password: bcrypt.hashSync("123456", 10),
         role: "admin",
         restaurant: "AckaBurger",
         createdAt:new Date(),
