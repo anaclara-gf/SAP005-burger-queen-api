@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "description": "API para a aplicação web desenvolvida para o restaurante Acka Burger",
+    "description": "API para a aplicação web desenvolvida para o restaurante Acka Burger. Para testar qualquer endpoint, você precisará de um token - você pode consegui-lo no endpoint /auth com o e-mail 'teste1@teste' e senha '123456'",
     "version": "1.0.0",
     "title": "Acka Burger API",
     "contact": {
